@@ -6,3 +6,72 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// --- Table: users
+
+// enum para listar os tipos de permissões
+enum UserRole {
+  customer // cliente
+  sale // vendedor
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  password String
+
+  role UserRole @default(customer)
+
+  // relacionamento com a tabela 'deliveries'
+  delivery Delivery[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+// --- Table: deliveries
+
+// enum para listar os tipos de status
+enum DeliveryStatus {
+  processing // processamento
+  shipped // enviado
+  delivered // entregue
+}
+
+model Delivery {
+  id String @id @default(uuid())
+  userId String @map("user_id")
+  description String
+
+  status DeliveryStatus @default(processing)
+
+  // relacionamento com a tabela 'delivery_logs'
+  deliveryLogs DeliveryLog[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  // relacionamento com a tabela 'users'
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("deliveries")
+}
+
+// --- Table: delivery_logs
+
+model DeliveryLog {
+  id String @id @default(uuid())
+  description String
+  deliveryId String @map("delivery_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  // relacionamento com a tabela 'deliveries'
+  delivery Delivery @relation(fields: [deliveryId], references: [id])
+
+  @@map("delivery_logs")
+}
