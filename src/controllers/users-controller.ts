@@ -44,6 +44,6 @@ export class UsersController {
     // userWhitoutPassword = USUÁRIO SEM A SENHA --> o SPREAD OPERATOR é para retornar os demais dados
     const { password: _, ...userWhitoutPassword } = user;
 
-    return response.json(userWhitoutPassword);
+    return response.status(201).json(userWhitoutPassword);
   }
 }
