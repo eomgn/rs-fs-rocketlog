@@ -43,6 +43,8 @@ export class SessionsController {
       expiresIn,
     });
 
-    return response.json({ token });
+    const { password: _, ...userWhitoutPassword } = user;
+
+    return response.json({ token, user: userWhitoutPassword });
   }
 }

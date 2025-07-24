@@ -5,5 +5,5 @@ const envSchema = zod.object({
   JWT_SECRET: zod.string(),
 });
 
-// exportando a variável env e passando o schema que recebe o process.env
+// criando e exportando a variável env e passando o schema que recebe process.env que é por onde está passando todas as variáveis de ambiente e validando elas
 export const env = envSchema.parse(process.env);
