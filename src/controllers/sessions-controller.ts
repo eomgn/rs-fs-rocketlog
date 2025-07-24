@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
-
-// import ZOD
 import zod from "zod";
-
-// import PRISMA de database
-import { prisma } from "@/database/prisma";
-
-// import COMPARE do BCRYPT
+import { prisma } from "@/database/prisma"; // import PRISMA de database
 import { compare } from "bcrypt";
 import { AppError } from "@/utils/AppError";
 
