@@ -1,7 +1,40 @@
 import { Request, Response } from "express";
+import { prisma } from "@/database/prisma";
+import { AppError } from "@/utils/AppError";
+import zod from "zod";
 
 export class DeliveryLogsController {
   async create(request: Request, response: Response) {
-    return response.json({ message: "ok" });
+    const bodySchema = zod.object({
+      delivery_id: zod.string().uuid(),
+      description: zod.string(),
+    });
+
+    const { delivery_id, description } = bodySchema.parse(request.body);
+
+    // recuperando delivery com id = o delivery_id passado em Delivery Logs
+    const delivery = await prisma.delivery.findUnique({
+      where: { id: delivery_id },
+    });
+
+    // condicional para verificar se o delivery existe
+    if (!delivery) {
+      throw new AppError("delivery not found", 404);
+    }
+
+    // condicional para forçar o status a estar em 'processing'
+    if (delivery.status === "processing") {
+      throw new AppError("change status to shipped", 404);
+    }
+
+    // enviando log para o banco de dados com descrição e deliveryId
+    await prisma.deliveryLog.create({
+      data: {
+        deliveryId: delivery_id,
+        description,
+      },
+    });
+
+    return response.json();
   }
 }
