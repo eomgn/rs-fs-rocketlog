@@ -37,4 +37,22 @@ export class DeliveryLogsController {
 
     return response.json();
   }
+
+  async show(request: Request, response: Response) {
+    const paramsSchema = zod.object({
+      delivery_id: zod.string().uuid(),
+    });
+
+    const { delivery_id } = paramsSchema.parse(request.params);
+
+    const delivery = await prisma.delivery.findUnique({
+      where: { id: delivery_id },
+    });
+
+    if (request.user?.role === "customer" && delivery?.userId) {
+      throw new AppError("the user can only view their deliveries", 401);
+    }
+
+    return response.json(delivery);
+  }
 }
