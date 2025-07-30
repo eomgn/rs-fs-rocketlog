@@ -26,6 +26,14 @@ export class DeliveriesStatusController {
       where: { id },
     });
 
+    // enviando para o banco de dados na tabela delovery_logs
+    await prisma.deliveryLog.create({
+      data: {
+        deliveryId: id,
+        description: status,
+      },
+    });
+
     return response.json();
   }
 }
