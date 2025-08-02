@@ -12,7 +12,7 @@ describe("UsersController", () => {
     await prisma.user.delete({ where: { id: user_id } });
   });
 
-  // criando teste
+  //teste para cadastro de usuario
   it("should create a new user successfully", async () => {
     const response = await request(app).post("/users").send({
       name: "Test User",
@@ -26,5 +26,19 @@ describe("UsersController", () => {
 
     // capturando 'id' e passando para a variável 'user_id'
     user_id = response.body.id;
+  });
+
+  // teste para evitar duplicidade no email
+  it("should throw an error if user with same email already exists", async () => {
+    const response = await request(app).post("/users").send({
+      name: "Duplicate User",
+      email: "testuser@email.com",
+      password: "123456",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "User with the same email already exists"
+    );
   });
 });
