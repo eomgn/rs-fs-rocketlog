@@ -28,6 +28,8 @@ describe("UsersController", () => {
     user_id = response.body.id;
   });
 
+  // --------------------------------------
+
   // teste para evitar duplicidade no email
   it("should throw an error if user with same email already exists", async () => {
     const response = await request(app).post("/users").send({
@@ -40,5 +42,20 @@ describe("UsersController", () => {
     expect(response.body.message).toBe(
       "User with the same email already exists"
     );
+  });
+
+  // --------------------------------------
+
+  // teste de validação de email
+
+  it("should throw a validation error if email is invalid", async () => {
+    const response = await request(app).post("/users").send({
+      name: "Test User",
+      email: "invalid-email",
+      password: "password123",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("validation error");
   });
 });
